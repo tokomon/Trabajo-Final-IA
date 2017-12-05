@@ -1,81 +1,74 @@
-class KMeans
+/*Universidad Católica San Pablo
+**Integrantes:
++++++++++++++++
+**~Wilber Cutire
+**~Yessica Chuctaya
+**~Angie Valeriano
+**~Ximena Pocco
++++++++++++++++
+#Basado en https://github.com/drobison/k-means
+***/
+
+class Cluster
 {
-// private members
-	// Dimension of each data-point/sample/observation from the input data
 	int dataPointDim;
 
-	// Number of clusters to be created - provided by the user
 	int numberOfClusters;
 
-	// Flag to check if the dimension of each data-point is found or not
 	bool foundDataPointDim;
 
-	// Input data provided by the user
-	std::vector<std::vector<float> > inputData;
+	vector<vector<float> > inputData;
 
-	// Centroids of cluster
-	std::vector<std::vector<float> > centroids;
+	vector<vector<float> > centroids;
 
-	// Array repesenting which data-point is assigned to which cluster
-	std::vector<int> assignedClusters;
+	vector<int> assignedClusters;
 
-	// To initialize the centroids of the clusters to different data-points from the input data
-	// using the number of data-points and clusers provided by the user
 	void initCentroids();
 
-	// To Calculate the Euclidean distance between centroid vector and data-point vector
-	float getEuclideanDistance(std::vector<float> sample, std::vector<float> centroid);
+	float getEuclideanDistance(vector<float> sample, vector<float> centroid);
 
-	// To assign the data-point to one of the clusters 
-	// based on minimum distance between centroid and the data-point
 	void assignClusters();
 
-	// To calculate the means as centroids of the new clusters
 	void updateCentroids();
 
-	// Destructor
-	~KMeans();
+	~Cluster();
 
-// public members
 public:
-	// Constructor
-	KMeans();
+	Cluster();
 
-	// To start k-means clustering for input data
 	void process(string file);
 
-	// Setter example
 	void setNumberOfClusters(int numberOfClusters);
 	
-	// Getter example
 	int getNumberOfClusters();
 	int prediccion_basada_en_Distancia(int User,int Item);
-	float prediccionCompleta(string file);
+	float prediccionCompletaComp(string file, string original);
+	void prediccionCompleta(string file);//, string original);
+	void Imprimir(string file);
 };
 
 map<int,map<int,int> > M;
 map<string,pair<int,int> > Books;
 
-KMeans::KMeans()
+Cluster::Cluster()
 {
 	dataPointDim = 0;
 	numberOfClusters = 0;
 	foundDataPointDim = false;
 }
 
-void KMeans::setNumberOfClusters(int numberOfClusters)
+void Cluster::setNumberOfClusters(int numberOfClusters)
 {
-	// Use of 'this' keyword
 	this->numberOfClusters = numberOfClusters;
 	return;
 }
 
-int KMeans::getNumberOfClusters()
+int Cluster::getNumberOfClusters()
 {
 	return numberOfClusters;
 }
 
-void KMeans::initCentroids()
+void Cluster::initCentroids()
 {
 	int step = inputData.size()/numberOfClusters;
 	centroids.clear();
@@ -89,8 +82,7 @@ void KMeans::initCentroids()
 	return;
 }
 
-float KMeans::getEuclideanDistance(std::vector<float> sample, std::vector<float> centroid)
-{
+float Cluster::getEuclideanDistance(vector<float> sample, vector<float> centroid){
 	float euclideanDistance = 0.0;
 	for(int i = 0; i < dataPointDim; i++){
 		euclideanDistance += pow(centroid[i] - sample[i], 2);
@@ -99,7 +91,7 @@ float KMeans::getEuclideanDistance(std::vector<float> sample, std::vector<float>
 	return sqrt(euclideanDistance);
 }
 
-int KMeans::prediccion_basada_en_Distancia(int User,int Item){
+int Cluster::prediccion_basada_en_Distancia(int User,int Item) {
 	int ans=0;
 	float may=0;
 	for (int j=0;j<=10;j++){
@@ -121,9 +113,8 @@ int KMeans::prediccion_basada_en_Distancia(int User,int Item){
 	return ans;
 }
 
-void KMeans::assignClusters()
-{
-	std::vector<int> assignedClustersPrev = assignedClusters;
+void Cluster::assignClusters() {
+	vector<int> assignedClustersPrev = assignedClusters;
 	int iteracion=0;
 	bool areEquals=false;
 	do
@@ -132,7 +123,7 @@ void KMeans::assignClusters()
 		assignedClustersPrev = assignedClusters;
 		for(int i = 0; i < inputData.size(); i++)
 		{
-			float minDistance = std::numeric_limits<float>::max();
+			float minDistance = numeric_limits<float>::max();
 			for(int j = 0; j < numberOfClusters; j++)
 			{
 				float euclideanDistance = getEuclideanDistance(inputData[i], centroids[j]);
@@ -154,20 +145,18 @@ void KMeans::assignClusters()
 			}
 		}
 		cout << "errors: " << errors << endl;
-	// Keep updating until assignedClusters is not updating
 	} while(!areEquals);
 
 	return;
 }
 
-void KMeans::updateCentroids()
+void Cluster::updateCentroids()
 {
 	for(int i = 0; i < numberOfClusters; i++)
 	{
 		int clusterPointsCount = 0;
 		vector<vector<float> > clusterPoints;
 
-		// Counting the number of data-points assigned to current cluster
 		for(int j = 0; j < assignedClusters.size(); j++)
 		{
 			if(assignedClusters[j] == i)
@@ -177,7 +166,6 @@ void KMeans::updateCentroids()
 			}
 		}
 
-		// Calculating the mean as new centroid
 		for(int j = 0; j < dataPointDim; j++)
 		{
 			float sum = 0.0;
@@ -200,9 +188,9 @@ vector<vector<int> > V;
 vector<string>BooksData;
 vector<int> Users;
 
-float KMeans::prediccionCompleta(string file){
+float Cluster::prediccionCompletaComp(string file,string original){
 	ifstream in;
-	in.open("OriginalData.dat",ios::in);
+	in.open(original.c_str(),ios::in);
 	map<int,vector<int> > Original;
 	for (int i=0;i<97;i++){
 		int User,Rank;
@@ -252,7 +240,66 @@ float KMeans::prediccionCompleta(string file){
 	return error;
 }
 
-void KMeans::process(string file)
+void Cluster::prediccionCompleta(string file){
+	file=file.substr(0,file.size()-4);
+	file.push_back(getNumberOfClusters()+'0');
+	file+="clusters.csv";
+	ofstream of;
+	of.open(file.c_str(),ios::out);
+	of << "Usuarios\\Libros";
+	for (int j=0;j<dataPointDim;j++){
+		of << ";" << BooksData[j];
+	}
+	of << endl;
+	int total=0;
+	for (int i=0;i<Users.size();i++){
+		of << Users[i];
+		for (int j=0;j<dataPointDim;j++){
+			if(M[Users[i]].find(j)!=M[Users[i]].end()){
+				of << ";" << M[Users[i]][j] ;
+			} else {
+				int prediccion= prediccion_basada_en_Distancia(i, j);
+				if(prediccion!=0){
+					of << ";" << prediccion;
+				} else {
+					of << ";-";
+				}
+			}
+		}
+		of << endl;
+	}
+	of.close();
+	return;
+}
+
+void Cluster::Imprimir(string file){
+	file=file.substr(0,file.size()-4);
+	file.push_back(getNumberOfClusters()+'0');
+	file+="original.csv";
+	ofstream of;
+	of.open(file.c_str(),ios::out);
+	of << "Usuarios\\Libros";
+	for (int j=0;j<dataPointDim;j++){
+		of << ";" << BooksData[j];
+	}
+	of << endl;
+	int total=0;
+	for (int i=0;i<Users.size();i++){
+		of << Users[i];
+		for (int j=0;j<dataPointDim;j++){
+			if(M[Users[i]].find(j)!=M[Users[i]].end()){
+				of << ";" << M[Users[i]][j] ;
+			} else {
+				of << ";-";
+			}
+		}
+		of << endl;
+	}
+	of.close();
+	return;
+}
+
+void Cluster::process(string file)
 {
 	// Opening the input file for reading input data
 	//ifstream inputFile;
@@ -268,7 +315,10 @@ void KMeans::process(string file)
 		char ratingC[3];
 		//int rating=stoi(r.substr(1,r.size()-1));
 		int user,rating;//=stoi(u.substr(1,u.size()-1));
-		fscanf(fp,"%d %s %d",&user, bookC, &rating);
+		float frating;
+		fscanf(fp,"%d %s %f",&user, bookC, &frating);
+		int timestamp;frating*=2;fscanf(fp,"%d", &timestamp);//<-Solo si existe Time Stamp 
+		rating=frating;
 		string book(bookC);//,u(userC),r(ratingC);
 		if(rating){
 			if(Books.find(book)==Books.end()){
@@ -317,10 +367,8 @@ void KMeans::process(string file)
 		idUser++;
 	}
 	printf("Data Normalizada\n");
-	// Setting the size of assignedClusters vector same as number of input data-points
 	assignedClusters.resize(inputData.size(), 1);
 
-	// Copying input data to output if number of clusters expected is same as size of input data
 	initCentroids();
 	printf("Centroides Inicializados\n");
 	assignClusters();
@@ -337,6 +385,8 @@ void KMeans::process(string file)
 	for (auto it=ClusterSize.begin();it!=ClusterSize.end();it++){
 		cout << it->first << " = " << it->second << endl;
 	}
-	cout << "Error Total: " << prediccionCompleta(file) << endl;
+	//cout << "Error Total: " << prediccionCompletaComp(file,"OriginalData.dat") << endl;
+	prediccionCompleta(file);
+	//Imprimir(file);
 	return;
 }
