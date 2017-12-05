@@ -1,3 +1,14 @@
+/*Universidad Católica San Pablo
+**Integrantes:
++++++++++++++++
+**~Wilber Cutire
+**~Yessica Chuctaya
+**~Angie Valeriano
+**~Ximena Pocco
++++++++++++++++
+#Basado en https://github.com/drobison/k-means
+***/
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -24,10 +35,8 @@ int main(int argc, char* argv[])
 
 	Cluster *kMeans = new Cluster();
 
-	// Example of Getter and Setter - to update the private member through public member
 	kMeans->setNumberOfClusters(stoi(argv[2]));
 
-	// Start k-means clustering for input data
 	string file(argv[1]);
 	kMeans->process(file);
 
