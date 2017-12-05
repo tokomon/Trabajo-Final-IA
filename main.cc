@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	KMeans *kMeans = new KMeans();
+	Cluster *kMeans = new Cluster();
 
 	// Example of Getter and Setter - to update the private member through public member
 	kMeans->setNumberOfClusters(stoi(argv[2]));
